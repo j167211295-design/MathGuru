@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MathGuru</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#f7f5ff;color:#202060}
+button{cursor:pointer}
+.page{display:none;min-height:100vh;padding-bottom:85px}
+.page.active{display:block}
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#fff,#eee7ff)}
+.login-card{width:100%;max-width:390px;background:#fff;padding:32px 24px;border-radius:30px;box-shadow:0 20px 60px #5b2d8c25}
+.logo{width:78px;height:78px;margin:auto;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:40px;background:linear-gradient(135deg,#743cff,#a855f7)}
+.login-title{text-align:center;margin-top:18px;font-size:29px;font-weight:800}
+.sub{text-align:center;color:#8b86a0;margin:8px 0 28px}
+label{font-size:13px;font-weight:bold;display:block;margin:14px 0 7px}
+.input{width:100%;height:52px;border:1px solid #e4dff0;border-radius:15px;padding:0 16px;outline:none;background:#faf9fd;font-size:15px}
+.btn{width:100%;height:52px;border:0;border-radius:16px;color:#fff;font-weight:bold;font-size:15px;background:linear-gradient(135deg,#743cff,#a855f7);margin-top:20px}
+.error{margin-top:14px;padding:10px;text-align:center;color:#dc2626;background:#fff0f2;border-radius:12px}
+
+.topbar{padding:22px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-logo{width:52px;height:52px;border-radius:17px;background:linear-gradient(135deg,#743cff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:27px}
+.brand h1{font-size:24px}
+.brand p{font-size:11px;color:#8b86a0;margin-top:3px}
+.icon-btn{font-size:24px;background:none;border:0}
+
+.hero{margin:5px 22px 20px;padding:25px;min-height:235px;border-radius:27px;background:linear-gradient(135deg,#eee9ff,#fff);border:1px solid #ddd3ff;box-shadow:0 15px 40px #5b21b615}
+.hero h2{font-size:26px;line-height:1.2}
+.hero h2 span{color:#713cff;font-size:35px}
+.hero p{margin-top:15px;color:#6e6880}
+.streak{display:inline-block;margin-top:18px;padding:10px 17px;border-radius:30px;background:#e8ddff;color:#6730d8;font-weight:bold}
+
+.stats{margin:0 22px 25px;padding:18px 5px;background:#fff;border-radius:22px;display:grid;grid-template-columns:repeat(4,1fr);box-shadow:0 10px 30px #4c3b7d12}
+.stat{text-align:center;border-right:1px solid #eeeaf5}
+.stat:last-child{border:0}
+.stat-icon{font-size:22px}.stat b{display:block;margin-top:6px;color:#6730d8}.stat small{font-size:9px;color:#858095}
+
+.section{margin:0 22px 15px;font-size:20px}
+.cards{margin:0 22px;display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.card{padding:18px;min-height:185px;border-radius:22px;background:#fff;box-shadow:0 10px 30px #4c3b7d12}
+.card-icon{width:55px;height:55px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:27px;margin-bottom:13px}
+.purple{background:#eee5ff}.blue{background:#e2f1ff}.green{background:#ddfaec}.pink{background:#ffe5f3}.yellow{background:#fff2cc}
+.card h3{font-size:16px;margin-bottom:7px}.card p{font-size:12px;color:#77718b;line-height:1.4}
+.card button{border:0;color:#fff;font-weight:bold;border-radius:20px;padding:9px 13px;margin-top:12px;background:#743cff}
+
+.content{padding:0 22px}
+.back{border:0;background:none;font-size:16px;color:#743cff;font-weight:bold;margin-bottom:18px}
+.panel{background:#fff;border-radius:24px;padding:22px;box-shadow:0 10px 30px #4c3b7d12;margin-bottom:18px}
+.panel h2{margin-bottom:8px}.panel p{color:#77718b;font-size:13px;line-height:1.5}
+.math-input{width:100%;height:55px;margin-top:15px;border:1px solid #ddd5ef;border-radius:15px;padding:0 15px;font-size:18px}
+.solve-btn{width:100%;height:50px;border:0;border-radius:15px;background:#743cff;color:#fff;font-weight:bold;margin-top:12px}
+.answer{margin-top:15px;padding:15px;border-radius:15px;background:#f1ecff;color:#4c27a8;line-height:1.6}
+
+.topic{padding:17px;margin:10px 0;border-radius:17px;background:#faf9ff;border:1px solid #eee7ff}
+.topic b{display:block;margin-bottom:5px}.topic span{font-size:12px;color:#77718b}
+
+.quiz-option{width:100%;padding:15px;margin-top:10px;border:1px solid #ddd5ef;border-radius:14px;background:#faf9ff;text-align:left}
+.quiz-option.correct{background:#dcfaeb;border-color:#16b878}
+.quiz-option.wrong{background:#ffe5e8;border-color:#dc2626}
+
+.progress-bar{height:13px;background:#eeeaf5;border-radius:20px;overflow:hidden;margin:10px 0 20px}
+.progress-fill{height:100%;width:70%;background:#743cff}
+
+.bottom{position:fixed;left:0;right:0;bottom:0;height:70px;background:#fff;border-top:1px solid #eeeaf5;display:flex;justify-content:space-around;align-items:center;z-index:10}
+.nav{text-align:center;color:#88829a;font-size:9px;border:0;background:none}
+.nav-icon{display:block;font-size:21px;margin-bottom:3px}.nav.active{color:#743cff;font-weight:bold}
+
+@media(max-width:360px){
+.cards{grid-template-columns:1fr}.stats small{font-size:8px}
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage" class="login">
+<div class="login-card">
+<div class="logo">🧠</div>
+<div class="login-title">MathGuru</div>
+<div class="sub">Learn Smarter. Solve Faster. 🚀</div>
+
+<label>Username</label>
+<input id="username" class="input" placeholder="Enter username">
+
+<label>Password</label>
+<input id="password" class="input" type="password" placeholder="Enter password">
+
+<button class="btn" onclick="login()">Login →</button>
+<div id="loginError"></div>
+</div>
+</div>
+
+<!-- HOME -->
+<div id="home" class="page">
+<div class="topbar">
+<div class="brand">
+<div class="brand-logo">🧠</div>
+<div><h1>MathGuru</h1><p>Learn Smarter. Solve Faster.</p></div>
+</div>
+<button class="icon-btn" onclick="showPage('profile')">⚙️</button>
+</div>
+
+<div class="hero">
+<h2>Welcome back,<br><span>Jagan!</span></h2>
+<p>Ready for today's challenge? 🚀</p>
+<div class="streak">🔥 Streak: 3 days</div>
+</div>
+
+<div class="stats">
+<div class="stat"><div class="stat-icon">🎯</div><b>12</b><small>Questions</small></div>
+<div class="stat"><div class="stat-icon">🏆</div><b>80%</b><small>Quiz Score</small></div>
+<div class="stat"><div class="stat-icon">📅</div><b>3</b><small>Day Streak</small></div>
+<div class="stat"><div class="stat-icon">⭐</div><b>2</b><small>Achievements</small></div>
+</div>
+
+<div class="section">Choose What You Want to Do</div>
+
+<div class="cards">
+<div class="card"><div class="card-icon purple">🧮</div><h3>Solve Math</h3><p>Get instant solutions with explanations.</p><button onclick="showPage('solve')">Start Now →</button></div>
+
+<div class="card"><div class="card-icon blue">❓</div><h3>Ask Doubt</h3><p>Type your question and learn simply.</p><button style="background:#2196f3" onclick="showPage('doubt')">Ask Now →</button></div>
+
+<div class="card"><div class="card-icon green">📋</div><h3>Quiz</h3><p>Test your knowledge and improve.</p><button style="background:#16b878" onclick="showPage('quiz')">Start Quiz →</button></div>
+
+<div class="card"><div class="card-icon pink">📖</div><h3>Learn Topics</h3><p>Explore important mathematics chapters.</p><button style="background:#ec4899" onclick="showPage('learn')">Explore →</button></div>
+
+<div class="card"><div class="card-icon blue">📈</div><h3>Progress</h3><p>Track your learning and growth.</p><button style="background:#2196f3" onclick="showPage('progress')">View →</button></div>
+
+<div class="card"><div class="card-icon yellow">🏆</div><h3>Achievements</h3><p>Complete goals and unlock rewards.</p><button style="background:#f5a900" onclick="showPage('achievements')">View →</button></div>
+</div>
+
+<nav></nav>
+</div>
+
+<!-- SOLVE -->
+<div id="solve" class="page">
+<div class="topbar"><div class="brand"><div class="brand-logo">🧮</div><div><h1>Solve Math</h1><p>Step-by-step solutions</p></div></div></div>
+<div class="content">
+<button class="back" onclick="showPage('home')">← Back to Home</button>
+<div class="panel">
+<h2>🧮 Math Solver</h2>
+<p>Enter a simple arithmetic expression.</p>
+<input id="mathInput" class="math-input" placeholder="Example: 25 + 15 × 2">
+<button class="solve-btn" onclick="solveMath()">Solve →</button>
+<div id="mathAnswer"></div>
+</div>
+<div class="panel">
+<h3>Examples</h3>
+<p style="margin-top:10px">25 + 15</p>
+<p>100 ÷ 4</p>
+<p>12 × 8</p>
+<p>50 − 17</p>
+</div>
+</div>
+</div>
+
+<!-- DOUBT -->
+<div id="doubt" class="page">
+<div class="topbar"><div class="brand"><div class="brand-logo">❓</div><div><h1>Ask Doubt</h1><p>Let's understand together</p></div></div></div>
+<div class="content">
+<button class="back" onclick="showPage('home')">← Back to Home</button>
+<div class="panel">
+<h2>❓ Ask your doubt</h2>
+<p>Type a mathematics question below.</p>
+<textarea id="doubtInput" class="math-input" style="height:120px;padding-top:15px" placeholder="Example: What is the formula for area of a circle?"></textarea>
+<button class="solve-btn" onclick="answerDoubt()">Get Explanation →</button>
+<div id="doubtAnswer"></div>
+</div>
+</div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="page">
+<div class="topbar"><div class="brand"><div class="brand-logo">📋</div><div><h1>Math Quiz</h1><p>Test your skills</p></div></div></div>
+<div class="content">
+<button class="back" onclick="showPage('home')">← Back to Home</button>
+<div class="panel">
+<h2>Question 1</h2>
+<p style="margin-top:10px">What is 12 × 8?</p>
+<button class="quiz-option" onclick="quizAnswer(this,false)">86</button>
+<button class="quiz-option" onclick="quizAnswer(this,true)">96</button>
+<button class="quiz-option" onclick="quizAnswer(this,false)">108</button>
+<button class="quiz-option" onclick="quizAnswer(this,false)">88</button>
+<div id="quizResult"></div>
+</div>
+</div>
+</div>
+
+<!-- LEARN -->
+<div id="learn" class="page">
+<div class="topbar"><div class="brand"><div class="brand-logo">📖</div><div><h1>Learn Topics</h1><p>Build your fundamentals</p></div></div></div>
+<div class="content">
+<button class="back" onclick="showPage('home')">← Back to Home</button>
+<div class="panel">
+<h2>📚 Mathematics</h2>
+
+<div class="topic"><b>➗ Algebra</b><span>Variables, equations and expressions</span></div>
+<div class="topic"><b>📐 Geometry</b><span>Shapes, angles, area and volume</span></div>
+<div class="topic"><b>📊 Statistics</b><span>Mean, median, mode and data</span></div>
+<div class="topic"><b>📈 Trigonometry</b><span>Sin, cos, tan and triangles</span></div>
+<div class="topic"><b>∫ Calculus</b><span>Differentiation and integration</span></div>
+</div>
+</div>
+</div>
+
+<!-- PROGRESS -->
+<div id="progress" class="page">
+<div class="topbar"><div class="brand"><div class="brand-logo">📊</div><div><h1>Progress</h1><p>Your learning journey</p></div></div></div>
+<div class="content">
+<button class="back" onclick="showPage('home')">← Back to Home</button>
+<div class="panel">
+<h2>📈 Overall Progress</h2>
+<p style="margin-top:10px">Math Skills</p>
+<div class="progress-bar"><div class="progress-fill"></div></div>
+<p>Quiz Performance</p>
+<div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div>
+<p>Topics Completed</p>
+<div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div>
+</div>
+</div>
+</div>
+
+<!-- ACHIEVEMENTS -->
+<div id="achievements" class="page">
+<div class="topbar"><div class="brand"><div class="brand-logo">🏆</div><div><h1>Achievements</h1><p>Your rewards</p></div></div></div>
+<div class="content">
+<button class="back" onclick="showPage('home')">← Back to Home</button>
+<div class="panel">
+<h2>🏆 Your Achievements</h2>
+<div class="topic"><b>🔥 3 Day Streak</b><span>Learned for 3 consecutive days</span></div>
+<div class="topic"><b>🎯 First Solver</b><span>Solved your first math problem</span></div>
+<div class="topic"><b>⭐ Quiz Starter</b><span>Completed your first quiz</span></div>
+</div>
+</div>
+</div>
+
+<!-- PROFILE -->
+<div id="profile" class="page">
+<div class="topbar"><div class="brand"><div class="brand-logo">👤</div><div><h1>Profile</h1><p>MathGuru account</p></div></div></div>
+<div class="content">
+<button class="back" onclick="showPage('home')">← Back to Home</button>
+<div class="panel">
+<h2>👤 Jagan</h2>
+<p style="margin-top:8px">MathGuru Student</p>
+</div>
+<div class="panel">
+<h3>⚙️ Settings</h3>
+<div class="topic"><b>🔔 Notifications</b><span>Learning reminders enabled</span></div>
+<div class="topic"><b>🌙 Appearance</b><span>Light mode</span></div>
+<button class="solve-btn" onclick="logout()">Logout</button>
+</div>
+</div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div id="bottomNav" class="bottom" style="display:none">
+<button class="nav active" onclick="showPage('home')"><span class="nav-icon">⌂</span>Home</button>
+<button class="nav" onclick="showPage('solve')"><span class="nav-icon">🧮</span>Solve</button>
+<button class="nav" onclick="showPage('doubt')"><span class="nav-icon">❓</span>Doubt</button>
+<button class="nav" onclick="showPage('learn')"><span class="nav-icon">📖</span>Learn</button>
+<button class="nav" onclick="showPage('progress')"><span class="nav-icon">📊</span>Progress</button>
+<button class="nav" onclick="showPage('profile')"><span class="nav-icon">👤</span>Profile</button>
+</div>
+
+<script>
+function login(){
+const u=document.getElementById("username").value.trim();
+const p=document.getElementById("password").value;
+
+if(u==="jagan" && p==="1234"){
+document.getElementById("loginPage").style.display="none";
+document.getElementById("home").classList.add("active");
+document.getElementById("bottomNav").style.display="flex";
+window.scrollTo(0,0);
+}else{
+document.getElementById("loginError").innerHTML='<div class="error">❌ Wrong username or password</div>';
+}
+}
+
+function showPage(id){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+
+document.querySelectorAll(".nav").forEach(n=>n.classList.remove("active"));
+const navs=document.querySelectorAll(".nav");
+const map={home:0,solve:1,doubt:2,learn:3,progress:4,profile:5};
+if(map[id]!==undefined) navs[map[id]].classList.add("active");
+
+window.scrollTo(0,0);
+}
+
+function solveMath(){
+let input=document.getElementById("mathInput").value.trim();
+let answer=document.getElementById("mathAnswer");
+
+if(!input){
+answer.innerHTML='<div class="answer">⚠️ Please enter a calculation.</div>';
+return;
+}
+
+try{
+let safe=input.replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-");
+if(!/^[0-9+*/().%\\s-]+$/.test(safe)) throw new Error();
+
+let result=Function('"use strict";return ('+safe+')')();
+
+if(!Number.isFinite(result)) throw new Error();
+
+answer.innerHTML='<div class="answer"><b>Answer:</b><br>'+result+'<br><small>MathGuru solved it for you 🧠</small></div>';
+}catch(e){
+answer.innerHTML='<div class="answer">❌ Please enter a valid arithmetic expression.</div>';
+}
+}
+
+function answerDoubt(){
+let q=document.getElementById("doubtInput").value.trim();
+let box=document.getElementById("doubtAnswer");
+
+if(!q){
+box.innerHTML='<div class="answer">⚠️ Please type your doubt.</div>';
+return;
+}
+
+let text=q.toLowerCase();
+let explanation="Try breaking the problem into smaller steps and identify the formula or rule needed.";
+
+if(text.includes("circle") && text.includes("area")){
+explanation="The area of a circle is A = πr², where r is the radius.";
+}else if(text.includes("triangle") && text.includes("area")){
+explanation="The area of a triangle is A = ½ × base × height.";
+}else if(text.includes("percentage")){
+explanation="Percentage means a value out of 100. Percentage = (part ÷ whole) × 100.";
+}else if(text.includes("pythagoras")){
+explanation="For a right triangle, a² + b² = c², where c is the hypotenuse.";
+}
+
+box.innerHTML='<div class="answer"><b>💡 Explanation</b><br>'+explanation+'</div>';
+}
+
+function quizAnswer(button,correct){
+document.querySelectorAll(".quiz-option").forEach(b=>b.disabled=true);
+
+if(correct){
+button.classList.add("correct");
+document.getElementById("quizResult").innerHTML='<div class="answer">🎉 Correct! 12 × 8 = 96.</div>';
+}else{
+button.classList.add("wrong");
+document.getElementById("quizResult").innerHTML='<div class="answer">❌ Not quite. The correct answer is 96.</div>';
+}
+}
+
+function logout(){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById("bottomNav").style.display="none";
+document.getElementById("loginPage").style.display="flex";
+document.getElementById("password").value="";
+}
+</script>
+
+</body>
+</html>

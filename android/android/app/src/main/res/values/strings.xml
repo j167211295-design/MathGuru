@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MathGuru</string>
+    <string name="title_activity_main">MathGuru</string>
+    <string name="package_name">com.jagan.mathguru</string>
+    <string name="custom_url_scheme">com.jagan.mathguru</string>
+</resources>
