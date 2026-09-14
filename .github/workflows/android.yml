@@ -28,6 +28,12 @@ jobs:
         working-directory: .
         run: npm install
 
+      - name: Check Capacitor Android
+        run: |
+          pwd
+          ls -la node_modules/@capacitor/android/capacitor
+          test -f node_modules/@capacitor/android/capacitor/build.gradle
+
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
