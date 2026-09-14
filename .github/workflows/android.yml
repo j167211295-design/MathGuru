@@ -1,4 +1,5 @@
 name: MathGuru Android Build
+
 on:
   push:
     branches: [main]
@@ -7,9 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: android/android
 
     steps:
       - name: Checkout
@@ -21,6 +19,15 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Capacitor dependencies
+        working-directory: .
+        run: npm install
+
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
@@ -28,6 +35,7 @@ jobs:
         run: sdkmanager "platforms;android-36" "build-tools;35.0.0"
 
       - name: Build Debug APK
+        working-directory: android/android
         run: ./gradlew assembleDebug
 
       - name: Upload APK
