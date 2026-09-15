@@ -5,3 +5,6 @@ android/android/.gradle/
 __pycache__/
 *.pyc
 *.db
+
+*.jks
+*.keystore
