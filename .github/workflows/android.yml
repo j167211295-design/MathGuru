@@ -1,3 +1,4 @@
+
 name: MathGuru Android Build
 
 on:
@@ -35,12 +36,20 @@ jobs:
           test -f android/node_modules/@capacitor/android/capacitor/build.gradle
           echo "Capacitor Android module OK"
 
-      - name: Build APK
-        working-directory: android/android
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Decode release keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/android/mathguru-release.jks
 
-      - name: Upload APK
+      - name: Build Release AAB
+        working-directory: android/android
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew bundleRelease --stacktrace
+
+      - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
-          name: MathGuru-debug-apk
-          path: android/android/app/build/outputs/apk/debug/*.apk
+          name: MathGuru-release-aab
+          path: android/android/app/build/outputs/bundle/release/*.aab
