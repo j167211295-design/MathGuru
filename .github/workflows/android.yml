@@ -47,9 +47,15 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew bundleRelease --stacktrace
-
+             ./gradlew assembleRelease --stacktrace
+             
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
           name: MathGuru-release-aab
           path: android/android/app/build/outputs/bundle/release/*.aab
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MathGuru-release-apk
+          path: android/android/app/build/outputs/apk/release/*.apk
