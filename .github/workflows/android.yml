@@ -38,8 +38,8 @@ jobs:
 
       - name: Decode release keystore
         run: |
-           printf '%s' "${{ secrets.KEYSTORE_BASE64 }}" | tr -d '[:space:]' | base64 -d > android/android/mathguru-release.jks
-          
+           printf '%s' "${{ secrets.KEYSTORE_BASE64 }}" | tr -d '[:space:]' | base64 -d > android/android/app/mathguru-relese.jks
+           
       - name: Build Release AAB
         working-directory: android/android
         env:
