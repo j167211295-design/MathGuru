@@ -48,6 +48,14 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew bundleRelease --stacktrace
         
+      - name: Build Release APK
+        working-directory: android/android
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew assembleRelease --stacktrace
+        
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
