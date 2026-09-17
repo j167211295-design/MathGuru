@@ -1,7 +1,7 @@
 
-name: MathGuru Android Build
+    name: MathGuru Android Build
 
-on:
+    on:
   push:
     branches: [main]
   workflow_dispatch:
@@ -38,8 +38,8 @@ jobs:
 
       - name: Decode release keystore
         run: |
-           printf '%s' "${{ secrets.KEYSTORE_BASE64 }}" | tr -d '[:space:]' | base64 -d > android/android/app/mathguru-relese.jks
-           
+          printf '%s' "${{ secrets.KEYSTORE_BASE64 }}" | tr -d '[:space:]' | base64 -d > android/android/app/mathguru-relese.jks
+
       - name: Build Release AAB
         working-directory: android/android
         env:
@@ -47,22 +47,42 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew bundleRelease --stacktrace
-        
+
       - name: Build Release APK
         working-directory: android/android
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew assembleRelease --stacktrace
-        
+        run: |
+          ./gradlew assembleRelease --stacktrace
+
+          BUILD_TOOLS_VERSION=$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)
+
+          "$ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION/apksigner" sign \
+            --ks app/mathguru-relese.jks \
+            --ks-pass env:KEYSTORE_PASSWORD \
+            --ks-key-alias "$KEY_ALIAS" \
+            --key-pass env:KEY_PASSWORD \
+            app/build/outputs/apk/release/app-release-unsigned.apk
+
+          mv app/build/outputs/apk/release/app-release-unsigned.apk \
+             app/build/outputs/apk/release/app-release.apk
+
+      - name: Verify Signed APK
+        working-directory: android/android
+        run: |
+          BUILD_TOOLS_VERSION=$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)
+          "$ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION/apksigner" verify --verbose app/build/outputs/apk/release/app-release.apk
+
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
           name: MathGuru-release-aab
           path: android/android/app/build/outputs/bundle/release/*.aab
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: MathGuru-release-apk
-          path: android/android/app/build/outputs/apk/release/*.apk
+          path: android/android/app/build/outputs/apk/release/app-release.apk
