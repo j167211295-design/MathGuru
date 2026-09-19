@@ -1,9 +1,11 @@
+    
+      
+name: MathGuru Android Build
 
-    name: MathGuru Android Build
-
-    on:
+"on":
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -18,12 +20,12 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: "21"
 
       - name: Setup Node 22
         uses: actions/setup-node@v5
         with:
-          node-version: '22'
+          node-version: "22"
           cache: npm
           cache-dependency-path: android/package-lock.json
 
